@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="hbi.core.exam.mapper.OrderLinesMapper">
+
+    <select id="selectDetails" parameterType="Long" resultType="hbi.core.exam.dto.OrderLines">
+        SELECT
+            line_id AS lineId,
+            line_number AS lineNumber,
+            orderd_quantity AS orderdQuantity,
+            order_quantity_uom AS orderQuantityUom,
+            unit_selling_price AS unitSellingPrice,
+            orderd_quantity*unit_selling_price AS orderAmount,
+            description AS description,
+            addition1,
+            addition2,
+            addition3,
+            addition4,
+            addition5,
+            hiii.item_code AS itemCode,
+            hiii.item_description AS itemDescription
+        FROM
+            hap_om_order_lines hool,
+            hap_inv_inventory_items hiii
+        WHERE
+            hool.inventory_item_id = hiii.inventory_item_id
+        AND hool.header_id = #{headerId}
+    </select>
+
+    <delete id="deleteByHeaderId" parameterType="Long">
+        DELETE FROM hap_om_order_lines WHERE header_id = #{headerId}
+    </delete>
+
+</mapper>

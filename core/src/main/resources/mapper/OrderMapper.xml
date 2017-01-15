@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="hbi.core.exam.mapper.OrderHeadersMapper">
+
+    <select id="selectOrder" resultType="hbi.core.exam.dto.OrderHeaders" parameterType="hbi.core.exam.dto.OrderHeaders">
+        SELECT
+             hooh.HEADER_ID AS headerId,hooh.company_id AS companyId,hooh.customer_id AS customerId,hooh.ORDER_NUMBER AS orderNumber,hooh.ORDER_DATE AS orderDate,hooh.ORDER_STATUS AS orderStatus,
+             hoc.COMPANY_NAME AS companyName,hac.CUSTOMER_NAME AS customerName,
+             (SELECT sum(hool2.ORDERD_QUANTITY*hool2.UNIT_SELLING_PRICE) from hap_om_order_lines hool2 WHERE hool2.header_id = hool.header_id) as orderAmount
+        FROM
+            hap_ar_customers hac,
+            hap_om_order_headers hooh,
+            hap_om_order_lines hool,
+            hap_org_companys hoc
+        WHERE hac.CUSTOMER_ID = hooh.CUSTOMER_ID
+        AND hoc.COMPANY_ID = hooh.COMPANY_ID
+        AND hool.HEADER_ID = hooh.HEADER_ID
+        <if test="headerId!=null and headerId!='' ">
+            and hooh.header_id = #{headerId}
+        </if>
+        <if test="companyId!=null and companyId!='' ">
+            and hooh.company_id = #{companyId}
+        </if>
+        <if test="customerId!=null and customerId!='' ">
+            and hooh.customer_id = #{customerId}
+        </if>
+        <if test="orderNumber!=null and orderNumber!='' ">
+            and hooh.ORDER_NUMBER = #{orderNumber}
+        </if>
+        <if test="inventoryItemId!=null and inventoryItemId!='' ">
+            and hool.inventory_item_id = #{inventoryItemId}
+        </if>
+        <if test="orderStatus!=null and orderStatus!='' ">
+            and hooh.order_status = #{orderStatus}
+        </if>
+        GROUP BY hooh.HEADER_ID
+    </select>
+</mapper>
